@@ -1,0 +1,77 @@
+<html>
+
+<head>
+  <title>ESC POS</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+
+<body>
+  <div class="container" style="width: 50%;">
+    <h1>ESC POS</h1>
+    <form onsubmit="handlePrint()">
+      <div class=" form-group">
+        <label>Server</label>
+        <input class="form-control" id="server" value="http://localhost:4000">
+      </div>
+      <div class="form-group">
+        <label>Text</label>
+        <input class="form-control" id="text" value="Hello World!">
+      </div>
+      <button class="btn btn-primary">Print to Cashier Printer</button>
+    </form>
+    <form onsubmit="handleKitchenPrint()">
+      <div class=" form-group">
+        <label>Server</label>
+        <input class="form-control" id="server1" value="http://localhost:4000">
+      </div>
+      <div class="form-group">
+        <label>Text</label>
+        <input class="form-control" id="text1" value="Hello World!">
+      </div>
+      <button class="btn btn-primary">Print to Kitchen Printer</button>
+    </form>
+  </div>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script>
+    function handlePrint() {
+      event.preventDefault()
+      let server = document.getElementById("server").value
+      let text = document.getElementById("text").value
+      axios.post(`${server}/print`, { 
+        data: text,
+        printer: 'cashier_printer'
+      })
+      .then(function (response) {
+        if(response.data.status) {
+          alert('Success')
+        } else {
+          alert(response.data.msg)
+        }
+      })
+      .catch(function (error) {
+        alert(error)
+      });
+    }
+    function handleKitchenPrint() {
+      event.preventDefault()
+      let server = document.getElementById("server1").value
+      let text = document.getElementById("text1").value
+      axios.post(`${server}/print`, { 
+        data: text,
+        printer: 'kitchen_printer'
+      })
+      .then(function (response) {
+        if(response.data.status) {
+          alert('Success')
+        } else {
+          alert(response.data.msg)
+        }
+      })
+      .catch(function (error) {
+        alert(error)
+      });
+    }
+  </script>
+</body>
+</html>

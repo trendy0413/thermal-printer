@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'"> -->
+    <title>Printer Setup</title>
+    <link rel="stylesheet" href="./output.css">
+  </head>
+  <body>
+    <div class="p-4 w-screen h-screen flex justify-center items-center">
+      <div>
+        <h1 class="mb-6 w-full text-center text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">Setup your printer</h1>
+        <div>
+          <label for="cashier_printers" class="block mb-2 text-lg font-medium text-gray-900 dark:text-white">Cashier Printer</label>
+          <select id="cashier_printers" class="mb-4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            
+          </select>
+          <label for="kitchen_printers" class="block mb-2 text-lg font-medium text-gray-900 dark:text-white">Kitchen Printer</label>
+          <select id="kitchen_printers" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            
+          </select>
+        </div>
+      </div>
+    </div>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+      const server = 'http://localhost:4000'
+      const statusArr = {
+        SUCCESS: 1,
+        FAILED: 0
+      }
+
+      let cashier_printers = document.querySelector("#cashier_printers");
+      cashier_printers.addEventListener('change', async function() {
+        console.log(cashier_printers.value)
+        let response = await axios.post(`${server}/select-printer`, {
+          index: cashier_printers.value,
+          type: 'cashier_printer'
+        })
+        if(response.data.status === statusArr.SUCCESS) {
+          console.log('success')
+        } else {
+          alert(response.data.msg)
+        }
+      })
+
+      let kitchen_printers = document.querySelector("#kitchen_printers");
+      kitchen_printers.addEventListener('change', async function() {
+        console.log(kitchen_printers.value)
+        let response = await axios.post(`${server}/select-printer`, {
+          index: kitchen_printers.value,
+          type: 'kitchen_printer'
+        })
+        if(response.data.status === statusArr.SUCCESS) {
+          console.log('success')
+        } else {
+          alert(response.data.msg)
+        }
+      })
+
+      async function getDeviceList() {
+        const response = await axios.get(`${server}/printer-list`)
+        if(response.data.status === statusArr.SUCCESS) {
+          const { devices } = response.data;
+          console.log(response.data.devices)
+          devices.forEach((device, index) => {
+            let option1 = document.createElement('option');
+            let option2 = document.createElement('option');
+            option1.setAttribute('value', index);
+            option2.setAttribute('value', index);
+            if(index == response.data.cashierPrinter) {
+              console.log(index, 'cashier')
+              option1.setAttribute('selected', true);
+            }
+            if(index == response.data.kitchenPrinter) {
+              console.log(index, 'printer')
+              option2.setAttribute('selected', true);
+            }
+            option1.textContent = option2.textContent = `Printer ${index+1}`;
+            document.querySelector("#cashier_printers").appendChild(option1)
+            document.querySelector("#kitchen_printers").appendChild(option2)
+          })
+        } else {
+          alert(response.data.msg)
+        }
+      }
+      getDeviceList();
+    </script>
+  </body>
+</html>
