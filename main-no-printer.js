@@ -135,6 +135,7 @@ app.on('ready', function () {
   app.post('/print', async (req, res) => {
     try {
       const { data, printer } = req.body;
+      console.log(data);
       await print(data, printer);
       res.json({ 
         status: statusArr.SUCCESS,
@@ -155,6 +156,7 @@ app.on('ready', function () {
   });
 
   const print = (data, type) => {
+    console.log(data);
     return new Promise((resolve, reject) => {
       if(type === 'cashier_printer') {
         console.log(`print ${data} to cashier printer ${cashierPrinter}`)

@@ -9,8 +9,16 @@
 <body>
   <div class="container" style="width: 50%;">
     <h1>ESC POS</h1>
+    <button onclick="getInvoiceCommands()" class="btn btn-primary">Get Printer Commands</button>
+    <form onsubmit="handleCommandsPrint()">
+      <div class="form-group">
+        <label>Text</label>
+        <input class="form-control" id="text" value="Hello World!">
+      </div>
+      <button class="btn btn-primary">Print to Cashier Printer</button>
+    </form>
     <form onsubmit="handlePrint()">
-      <div class=" form-group">
+      <div class="form-group">
         <label>Server</label>
         <input class="form-control" id="server" value="http://localhost:4000">
       </div>
@@ -34,12 +42,28 @@
   </div>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script>
+    let api = 'https://apimenudev.talabatmenu.com';
+    let commands;
+    function getInvoiceCommands() {
+      axios.get(`${api}/invoice/commands`, null, {
+        params: {
+          orderId: '641a40ccd897060f3a592c5c',
+          invoiceID: '641a6b54d897060f3a593e46',
+          type: 'Invoice'
+        }
+      }).then(res => {
+        if(res.data.statusCode == '200') {
+          commands = res.data.data;
+          alert('successfully fetched printer commands')
+        }
+      })
+    }
     function handlePrint() {
       event.preventDefault()
       let server = document.getElementById("server").value
       let text = document.getElementById("text").value
       axios.post(`${server}/print`, { 
-        data: text,
+        data: commands,
         printer: 'cashier_printer'
       })
       .then(function (response) {
@@ -58,7 +82,7 @@
       let server = document.getElementById("server1").value
       let text = document.getElementById("text1").value
       axios.post(`${server}/print`, { 
-        data: text,
+        data: commands,
         printer: 'kitchen_printer'
       })
       .then(function (response) {

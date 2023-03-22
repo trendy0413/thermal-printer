@@ -2,12 +2,10 @@
   "name": "electron-printer",
   "version": "1.0.0",
   "description": "electron-printer",
-  "main": "main.js",
+  "main": "main-no-printer.js",
   "scripts": {
-    "start": "electron-forge start",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "package": "electron-forge package",
-    "make": "electron-forge make"
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Oliver",
   "license": "ISC",

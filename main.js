@@ -27,7 +27,6 @@ app.on('ready', function () {
   const escpos = require('escpos')
   escpos.USB = require('escpos-usb')
   // const vid = 0x0483, pid = 0x5743
-  let devices, cashierDevice, kitchenDevice, cashierPrinter, kitchenPrinter;
   var bodyParser = require('body-parser')
   var app = require('express')()
   var http = require('http').Server(app)
@@ -42,26 +41,25 @@ app.on('ready', function () {
     FAILED: 0
   }
 
+  let devices, cashierDevice, kitchenDevice, cashierPrinter, kitchenPrinter;
+
   app.get('/printer-list', (req, res) => {
     devices = escpos.USB.findPrinter()
     if(devices?.length) {
       let config;
       if(fs.existsSync('config.json')) {
         config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
-        cashierPrinter = devices[config.cashier_printer];
-        kitchenPrinter = devices[config.kitchen_printer];
-        console.log(cashierPrinter, kitchenPrinter)
       } else {
         config = {
           cashier_printer: 0,
           kitchen_printer: 0
         }
-        cashierPrinter = devices[config.cashier_printer];
-        kitchenPrinter = devices[config.kitchen_printer];
-        console.log("doesn't exist")
-        console.log(cashierPrinter, kitchenPrinter)
-        fs.writeFileSync('config.json', JSON.stringify(config))
+        fs.writeFileSync('config.json', JSON.stringify(config));
       }
+      cashierDevice = new escpos.USB(devices[config.cashier_printer]);
+      cashierPrinter = new escpos.Printer(cashierDevice);
+      kitchenDevice = new escpos.USB(devices[config.kitchen_printer]);
+      kitchenPrinter = new escpos.Printer(kitchenDevice);
       res.json({
         status: statusArr.SUCCESS,
         devices,
@@ -91,9 +89,6 @@ app.on('ready', function () {
         config.kitchen_printer = index;
         fs.writeFileSync('config.json', JSON.stringify(config))
       }
-      console.log({
-        selected_device: devices[index]
-      })
       res.json({
         status: statusArr.SUCCESS
       })
