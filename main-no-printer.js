@@ -53,7 +53,6 @@ app.on('ready', function () {
   // escpos.USB = require('escpos-usb')
   // const vid = 0x0483, pid = 0x5743
   // const vid=0x123, pid=0x123;
-  // let device, printer, devices;
   let cashierDevice, kitchenDevice, cashierPrinter, kitchenPrinter;
   var bodyParser = require('body-parser')
   var app = require('express')()
